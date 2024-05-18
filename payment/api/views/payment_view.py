@@ -1,17 +1,23 @@
 import json
-from config.settings.base import PAYMENT_OPTIONS
+
 from django.shortcuts import render
 from requests import api
 import pprint
 import iyzipay
-from django.views.generic import TemplateView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from config.settings.base import PAYMENT_OPTIONS
+
+from payment.models import PaymentModel
+
+sozlukToken = []
 
 
-class PaymentPage(TemplateView):
-    template_name = 'payment.html'
+class Payment(APIView):
+    def get(self, request, *args, **kwargs):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        payment_model: PaymentModel = PaymentModel.objects.create()
+
         buyer = {
             'id': 'BY789',
             'name': 'John',
@@ -65,7 +71,7 @@ class PaymentPage(TemplateView):
 
         request = {
             'locale': 'tr',
-            'conversationId': '123456789',
+            'conversationId': payment_model.conversationId,
             'price': '1',
             'paidPrice': '1.2',
             'currency': 'TRY',
@@ -87,15 +93,18 @@ class PaymentPage(TemplateView):
         header = {'Content-Type': 'application/json'}
         content = checkout_form_initialize.read().decode('utf-8')
         json_content = json.loads(content)
+        payment_model.token = json_content["token"]
+        payment_model.save()
         print(type(json_content))
         print(json_content["checkoutFormContent"])
         print("************************")
         print(json_content["token"])
         print("************************")
-        context['form'] = json_content["checkoutFormContent"]
-        return context
+        sozlukToken.append(json_content["token"])
+        print(sozlukToken)
+        form = json_content["checkoutFormContent"]
+        # form.replace('<script>', '')
+        # form.replace('</script>', '')
+        return Response({'message': 'ok :)', 'context': json_content["checkoutFormContent"]}, status=201)
 
-
-class CheckoutView(TemplateView):
-    template_name = 'checkout.html'
 

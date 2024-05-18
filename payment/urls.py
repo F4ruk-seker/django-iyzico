@@ -1,18 +1,9 @@
-from django.urls import path
-from .views import (
-    index,
-    payment,
-    result,
-    success,
-    fail,
+from django.urls import path, include
+from payment.views import PaymentPage, CheckoutView
 
-)
 
-urlpatterns = [
-    path('', index, name='index'),
-    path('payment/', payment, name='payment'),
-    path('result/', result, name='result'),
-    path('success/', success, name='success'),
-    path('failure/', fail, name='failure'),
-
+urlpatterns: list[path] = [
+    path('payment', PaymentPage.as_view()),
+    path('checkout', CheckoutView.as_view()),
 ]
+

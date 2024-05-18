@@ -1,5 +1,7 @@
 # Django Iyzico integration
 
+[![preview](.preview/ezgif-7-626f5e78d9.gif)](https://www.youtube.com/watch?v=e0_-1_ltoOk)
+
 ## Installation
 
 1. Create a virtual environment:

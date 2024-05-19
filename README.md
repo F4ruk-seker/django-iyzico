@@ -13,7 +13,7 @@
 2. Clone the project:
 
     ```bash
-    git clone https://github.com/F4ruk-seker/django-development-templates/tree/standard_django_template
+    git clone https://github.com/F4ruk-seker/django-iyzico.git
     ```
 
 3. Install the requirements:

@@ -14,7 +14,7 @@
         <section class="d-flex" style="height: 100vh;">
 
             <article class="w-100 justify-content-center align-content-center text-center">
-                <button class="btn btn-primary" @click="pay">ödeme yap</button>
+                <button class="btn btn-primary" @click="pay" ref="payButton" >ödeme yap</button>
             </article>
         </section>
         <div ref="scriptContainer"></div>
@@ -36,6 +36,7 @@
                         const data = await response.json()
                         //this.payment_form = data.context
                         this.executeScript(data.context)
+                        this.$refs.payButton.disabled = true
                         //this.executeScript(data.context);
 
                     }

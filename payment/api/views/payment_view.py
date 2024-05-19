@@ -8,7 +8,8 @@ from django.shortcuts import reverse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from config.settings.base import PAYMENT_OPTIONS
-
+from payment.api.serializers import ProductSerializer
+from products.models import BasketModel
 from payment.models import PaymentModel
 
 
@@ -24,7 +25,11 @@ class Payment(APIView):
         # callback_url = f'{request_host}{path}'
         callback_url = f'{request.scheme}://{request.get_host()}{reverse('api:payment:result')}'
         payment_model: PaymentModel = PaymentModel.objects.create()
-
+        basket_model: BasketModel = BasketModel.objects.first()
+        print(basket_model.get_products())
+        basket_items = ProductSerializer(basket_model.get_products(), many=True).data
+        pprint.pprint(basket_items[0])
+        print(basket_model.get_total_price())
         buyer = {
             'id': 'BY789',
             'name': 'John',
@@ -35,7 +40,7 @@ class Payment(APIView):
             'lastLoginDate': '2015-10-05 12:43:35',
             'registrationDate': '2013-04-21 15:12:09',
             'registrationAddress': 'Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1',
-            'ip': '85.34.78.112',
+            'ip': get_client_ip(request),
             'city': 'Istanbul',
             'country': 'Turkey',
             'zipCode': '34732'
@@ -49,38 +54,11 @@ class Payment(APIView):
             'zipCode': '34732'
         }
 
-        basket_items = [
-            {
-                'id': 'BI101',
-                'name': 'Binocular',
-                'category1': 'Collectibles',
-                'category2': 'Accessories',
-                'itemType': 'PHYSICAL',
-                'price': '0.3'
-            },
-            {
-                'id': 'BI102',
-                'name': 'Game code',
-                'category1': 'Game',
-                'category2': 'Online Game Items',
-                'itemType': 'VIRTUAL',
-                'price': '0.5'
-            },
-            {
-                'id': 'BI103',
-                'name': 'Usb',
-                'category1': 'Electronics',
-                'category2': 'Usb / Cable',
-                'itemType': 'PHYSICAL',
-                'price': '0.2'
-            }
-        ]
-
         request = {
             'locale': 'tr',
             'conversationId': payment_model.conversationId,
-            'price': '1',
-            'paidPrice': '1.2',
+            'price': basket_model.get_total_price(),
+            'paidPrice': basket_model.get_total_price(),
             'currency': 'TRY',
             'basketId': 'B67832',
             'paymentGroup': 'PRODUCT',
@@ -100,6 +78,8 @@ class Payment(APIView):
         header = {'Content-Type': 'application/json'}
         content = checkout_form_initialize.read().decode('utf-8')
         json_content = json.loads(content)
+        print(json_content)
+        pprint.pprint(json_content)
         payment_model.token = json_content["token"]
         payment_model.save()
         print(type(json_content))

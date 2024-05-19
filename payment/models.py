@@ -7,6 +7,8 @@ class PaymentModel(models.Model):
     conversationId = models.CharField(max_length=10, blank=True)
     token = models.CharField(max_length=50, default=None, blank=True, null=True)
 
+    # status vs.. burada tutulabilir
+
     @staticmethod
     def generate_random_id(length=10):
         return ''.join(str(random.randint(0, 9)) for _ in range(length))

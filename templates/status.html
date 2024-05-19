@@ -14,7 +14,7 @@
                 <ul class="messages list-unstyled">
                     {% for message in messages %}
                     <li>
-                        <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                        <div{% if message.tags %} class="alert alert-{{ message.tags }} m-3 shadow"{% endif %}>
                             <h1 class="p-0 m-0">{{ message }}</h1>
                         </div>
                     </li>

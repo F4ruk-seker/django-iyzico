@@ -4,6 +4,7 @@ from django.shortcuts import render
 from requests import api
 import pprint
 import iyzipay
+from django.shortcuts import reverse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from config.settings.base import PAYMENT_OPTIONS
@@ -11,9 +12,17 @@ from config.settings.base import PAYMENT_OPTIONS
 from payment.models import PaymentModel
 
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    return x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+
+
 class Payment(APIView):
     def get(self, request, *args, **kwargs):
-
+        # request_host = request.get_host()
+        # path = reverse('api:payment:result')
+        # callback_url = f'{request_host}{path}'
+        callback_url = f'{request.scheme}://{request.get_host()}{reverse('api:payment:result')}'
         payment_model: PaymentModel = PaymentModel.objects.create()
 
         buyer = {
@@ -75,7 +84,7 @@ class Payment(APIView):
             'currency': 'TRY',
             'basketId': 'B67832',
             'paymentGroup': 'PRODUCT',
-            "callbackUrl": "http://localhost:8000/api/result",
+            "callbackUrl": callback_url,
             "enabledInstallments": ['2', '3', '6', '9'],
             'buyer': buyer,
             'shippingAddress': address,

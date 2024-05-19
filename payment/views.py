@@ -5,6 +5,7 @@ from requests import api
 import pprint
 import iyzipay
 from django.views.generic import TemplateView
+from django.contrib import messages
 
 
 class PaymentPage(TemplateView):
@@ -98,4 +99,20 @@ class PaymentPage(TemplateView):
 
 class CheckoutView(TemplateView):
     template_name = 'checkout.html'
+
+
+class PaymentStatusView(TemplateView):
+    template_name = 'status.html'
+
+    def get(self, request, *args, **kwargs):
+        status = request.GET.get('status', None)
+        match status:
+            case 'success':
+                messages.add_message(request, messages.SUCCESS, "payment successful.".title())
+            case 'fail':
+                messages.add_message(request, messages.ERROR, "payment could not be received".capitalize())
+            case _:
+                messages.add_message(request, messages.ERROR, "unknown error while receiving payment".capitalize())
+        return super().get(request, *args, **kwargs)
+
 

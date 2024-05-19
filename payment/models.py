@@ -7,12 +7,13 @@ class PaymentModel(models.Model):
     conversationId = models.CharField(max_length=10, blank=True)
     token = models.CharField(max_length=50, default=None, blank=True, null=True)
 
+    @staticmethod
+    def generate_random_id(length=10):
+        return ''.join(str(random.randint(0, 9)) for _ in range(length))
+
     def save(self, *args, **kwargs):
-        if not self.pk:
-            _id: str = ''
-            for _ in range(10):
-                _id += f'{random.randint(0, 9)}'
-            self.conversationId = _id
+        if not self.pk and not self.conversationId:
+            self.conversationId = self.generate_random_id()
         super().save(*args, **kwargs)
 
     def __str__(self):

@@ -10,8 +10,6 @@ from config.settings.base import PAYMENT_OPTIONS
 
 from payment.models import PaymentModel
 
-sozlukToken = []
-
 
 class Payment(APIView):
     def get(self, request, *args, **kwargs):
@@ -100,8 +98,6 @@ class Payment(APIView):
         print("************************")
         print(json_content["token"])
         print("************************")
-        sozlukToken.append(json_content["token"])
-        print(sozlukToken)
         form = json_content["checkoutFormContent"]
         # form.replace('<script>', '')
         # form.replace('</script>', '')

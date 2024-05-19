@@ -1,17 +1,20 @@
 import json
 import pprint
 import iyzipay
+from django.http import HttpResponseRedirect
 from rest_framework.views import APIView
+from django.shortcuts import reverse, resolve_url
+from django.views.generic import RedirectView
 from rest_framework.response import Response
 from config.settings.base import PAYMENT_OPTIONS
 from payment.models import PaymentModel
 from django.shortcuts import get_object_or_404
 
+# RedirectView
+
 
 class ResultView(APIView):
     def post(self, request, *args, **kwargs):
-        context = dict()
-
         if token := request.data.get('token', None):
             payment_model: PaymentModel = get_object_or_404(PaymentModel, token=token)
             print(payment_model)
@@ -26,21 +29,16 @@ class ResultView(APIView):
             result = checkout_form_result.read().decode('utf-8')
             print(result)
             pyload = json.loads(result)
-
+            '''
+            paymentStatus : could be SUCCESS, FAILURE, INIT_THREEDS, CALLBACK_THREEDS, BKM_POS_SELECTED, CALLBACK_PECCO
+            '''
             pprint.pprint(pyload)
-            print("************************")
-            # print(sozlukToken[0])  # Form oluşturulduğunda
-            print("************************")
-            print("************************")
-            sonuc = json.loads(result, object_pairs_hook=list)
-            # print(sonuc[0][1])  # İşlem sonuç Durumu dönüyor
-            # print(sonuc[5][1])   # Test ödeme tutarı
-            print("************************")
-            for i in sonuc:
-                print(i)
-            print("************************")
-            print(token)
-            print("************************")
-            # paymentStatus
-        return Response({}, status=200)
+
+            if payment_status := pyload.get('paymentStatus', None):
+                result_path = reverse('payment:status')
+                match payment_status:
+                    case 'SUCCESS':
+                        return HttpResponseRedirect(f'{result_path}?status=success')
+                    case _:
+                        return HttpResponseRedirect(f'{result_path}?status=fail')
 

@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 import environ
-
+from django.core.checks import messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -131,3 +131,10 @@ PAYMENT_OPTIONS: dict = {
     'base_url': env('PAYMENT_BASE_URL')
 }
 
+MESSAGE_TAGS: dict ={
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    # messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
